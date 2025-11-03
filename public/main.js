@@ -1,0 +1,79 @@
+// Interactivity with the dom ie. thumbs and trash can actions
+
+var thumbUp = document.getElementsByClassName("fa-thumbs-up");
+var trash = document.getElementsByClassName("fa-trash");
+var thumbDown = document.getElementsByClassName("fa-thumbs-down");
+
+/********Thumbs Up ******/
+Array.from(thumbUp).forEach(function (element1) {
+  element1.addEventListener('click', function () {
+    const name = this.parentNode.parentNode.childNodes[1].innerText
+    const msg = this.parentNode.parentNode.childNodes[3].innerText
+    const total = parseFloat(this.parentNode.parentNode.childNodes[5].innerText)
+    // const thumbDown = parseFloat(this.parentNode.parentNode.childNodes[7].innerText)
+
+    fetch('/messages/thumbup', {
+      method: 'put',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        'name': name,
+        'msg': msg,
+        'thumbUp': total
+      })
+    })
+      .then(response => {
+        if (response.ok) return response.json()
+      })
+      .then(data => {
+        console.log(data)
+        window.location.reload(true)
+      })
+  });
+});
+/******Thumbs Up****** */
+
+/******Thumbs Down******/
+Array.from(thumbDown).forEach(function (element) {
+  element.addEventListener('click', function () {
+    const name = this.parentNode.parentNode.childNodes[1].innerText
+    const msg = this.parentNode.parentNode.childNodes[3].innerText
+    const total = parseFloat(this.parentNode.parentNode.childNodes[5].innerText)
+    // const thumbDown = parseFloat(this.parentNode.parentNode.childNodes[7].innerText)
+    fetch('/messages/thumbdown', {
+      method: 'put',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        'name': name,
+        'msg': msg,
+        'thumbUp': total
+      })
+    })
+      .then(response => {
+        if (response.ok) return response.json()
+      })
+      .then(data => {
+        console.log(data)
+        window.location.reload(true)
+      })
+  });
+});
+/******End Thumbs Down ******/
+
+Array.from(trash).forEach(function (element) {
+  element.addEventListener('click', function () {
+    const name = this.parentNode.parentNode.childNodes[1].innerText
+    const msg = this.parentNode.parentNode.childNodes[3].innerText
+    fetch('messages', {
+      method: 'delete',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        'name': name,
+        'msg': msg
+      })
+    }).then(function (response) {
+      window.location.reload()
+    })
+  });
+});

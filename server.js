@@ -1,0 +1,94 @@
+const express = require('express')
+const app = express()
+const bodyParser = require('body-parser')
+const MongoClient = require('mongodb').MongoClient
+
+var db, collection;
+
+const url = "mongodb+srv://hectormelendez129_db_user:T5VDZxFoGQ0N5Vu7@cluster0.x3dchpj.mongodb.net/locations?retryWrites=true&w=majority&appName=Cluster0";
+const dbName = "locations";
+
+app.listen(3000, () => {
+    MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true }, (error, client) => {
+        if(error) {
+            throw error;
+        }
+        db = client.db(dbName);
+        console.log("Connected to `" + dbName + "`!");
+    });
+});
+
+app.set('view engine', 'ejs')
+app.use(bodyParser.urlencoded({extended: true}))
+app.use(bodyParser.json())
+app.use(express.static('public'))
+
+app.get('/', (req, res) => {
+  db.collection('messages').find().toArray((err, result) => {
+    if (err) return console.log(err)
+    res.render('index.ejs', {messages: result})
+  })
+})
+
+app.post('/messages', (req, res) => {
+  db.collection('messages').insertOne({name: req.body.name, msg: req.body.msg, thumbUp: 0, thumbDown:0}, (err, result) => {
+    if (err) return console.log(err)
+    console.log('saved to database')
+    res.redirect('/')
+  })
+})
+
+/*****Thumbs UP*** */
+app.put('/messages/thumbup', (req, res) => {
+  db.collection('messages')
+  .findOneAndUpdate({name: req.body.name, msg: req.body.msg}, {
+    $set: {
+      thumbUp:req.body.thumbUp + 1
+    }
+  }, {
+    sort: {_id: -1},
+    upsert: true
+  }, (err, result) => {
+    if (err) return res.send(err)
+    res.send(result)
+  })
+})
+
+/****Thumbs Down*****/
+app.put('/messages/thumbdown', (req, res) => {
+  db.collection('messages')
+  .findOneAndUpdate({name: req.body.name, msg: req.body.msg}, {
+    $set: {
+      thumbUp:req.body.thumbUp - 1
+    }
+  }, {
+    sort: {_id: -1},
+    upsert: true
+  }, (err, result) => {
+    if (err) return res.send(err)
+    res.send(result)
+  })
+})
+/****Thumbs Down*****/
+app.put('/messages/thumbdown', (req, res) => {
+  db.collection('messages')
+  .findOneAndUpdate({name: req.body.name, msg: req.body.msg}, {
+    $set: {
+      thumbUp:req.body.thumbUp - 1
+    }
+  }, {
+    sort: {_id: -1},
+    upsert: true
+  }, (err, result) => {
+    if (err) return res.send(err)
+    res.send(result)
+  })
+})
+/****End Thumbs Down*****/
+
+app.delete('/messages', (req, res) => {
+  db.collection('messages').findOneAndDelete({name: req.body.name, msg: req.body.msg}, (err, result) => {
+    if (err) return res.send(500, err)
+    res.send('Message deleted!')
+  })
+})
