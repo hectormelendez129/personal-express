@@ -1,0 +1,80 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #5e5e5e;
+  color: #222;
+  margin: 2rem;
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+}
+
+.add-form {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 2rem;
+}
+
+.add-form input {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.add-form button{
+  background-color: rgb(65, 186, 65);
+}
+
+button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+.quotes-container {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  max-width: 600px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+}
+
+.quote-card {
+  background: #fff;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  flex-grow: 1;
+}
+
+.quote-actions {
+  margin-top: 10px;
+}
+
+.edit-form {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.hidden {
+  display: none;
+}
+
+.edit-button {
+  background-color: #2196F3;
+  color: white;
+}
+
+.delete-button {
+  background-color: #f44336;
+  color: white;
+}

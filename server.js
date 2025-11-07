@@ -1,94 +1,78 @@
 const express = require('express')
+const { MongoClient, ObjectId } = require('mongodb')
 const app = express()
-const bodyParser = require('body-parser')
-const MongoClient = require('mongodb').MongoClient
+require('dotenv').config();
 
-var db, collection;
+const PORT = process.env.PORT || 3000
+const connectionString = process.env.MONGO_URI
+const dbName = process.env.DB_NAME
 
-const url = "mongodb+srv://hectormelendez129_db_user:T5VDZxFoGQ0N5Vu7@cluster0.x3dchpj.mongodb.net/locations?retryWrites=true&w=majority&appName=Cluster0";
-const dbName = "locations";
+MongoClient.connect(connectionString)
+    .then(client => {
+        console.log('Connected to MongoDB')
+        const db = client.db(dbName)
+        const quotesCollection = db.collection('quotes')
 
-app.listen(3000, () => {
-    MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true }, (error, client) => {
-        if(error) {
-            throw error;
-        }
-        db = client.db(dbName);
-        console.log("Connected to `" + dbName + "`!");
-    });
-});
+        // Middleware
+        app.set('view engine', 'ejs')
+        app.use(express.urlencoded({ extended: true }))
+        app.use(express.json())
+        app.use(express.static('public'))
 
-app.set('view engine', 'ejs')
-app.use(bodyParser.urlencoded({extended: true}))
-app.use(bodyParser.json())
-app.use(express.static('public'))
+        // GET all quotes
+        app.get('/', (req, res) => {
+            quotesCollection.find().toArray()
+                .then(results => {
+                    res.render('index.ejs', { quotes: results })
+                })
+                .catch(err => console.error(err))
+        })
 
-app.get('/', (req, res) => {
-  db.collection('messages').find().toArray((err, result) => {
-    if (err) return console.log(err)
-    res.render('index.ejs', {messages: result})
-  })
-})
+        // POST new quote
+        app.post('/quotes', (req, res) => {
+            quotesCollection.insertOne(req.body)
+                .then(() => {
+                    res.redirect('/')
+                })
+                .catch(err => console.error(err))
+        })
 
-app.post('/messages', (req, res) => {
-  db.collection('messages').insertOne({name: req.body.name, msg: req.body.msg, thumbUp: 0, thumbDown:0}, (err, result) => {
-    if (err) return console.log(err)
-    console.log('saved to database')
-    res.redirect('/')
-  })
-})
+        // PUT (update) specific quote by ID
+        app.put('/quotes/:id', (req, res) => {
+            const id = req.params.id
+            const { name, quote } = req.body
 
-/*****Thumbs UP*** */
-app.put('/messages/thumbup', (req, res) => {
-  db.collection('messages')
-  .findOneAndUpdate({name: req.body.name, msg: req.body.msg}, {
-    $set: {
-      thumbUp:req.body.thumbUp + 1
-    }
-  }, {
-    sort: {_id: -1},
-    upsert: true
-  }, (err, result) => {
-    if (err) return res.send(err)
-    res.send(result)
-  })
-})
+            quotesCollection.updateOne(
+                { _id: new ObjectId(id) },
+                { $set: { name, quote } }
+            )
+                .then(result => {
+                    if (result.modifiedCount > 0) {
+                        res.json({ message: 'Quote updated successfully!' })
+                    } else {
+                        res.json({ message: 'No quote updated.' })
+                    }
+                })
+                .catch(err => console.error(err))
+        })
 
-/****Thumbs Down*****/
-app.put('/messages/thumbdown', (req, res) => {
-  db.collection('messages')
-  .findOneAndUpdate({name: req.body.name, msg: req.body.msg}, {
-    $set: {
-      thumbUp:req.body.thumbUp - 1
-    }
-  }, {
-    sort: {_id: -1},
-    upsert: true
-  }, (err, result) => {
-    if (err) return res.send(err)
-    res.send(result)
-  })
-})
-/****Thumbs Down*****/
-app.put('/messages/thumbdown', (req, res) => {
-  db.collection('messages')
-  .findOneAndUpdate({name: req.body.name, msg: req.body.msg}, {
-    $set: {
-      thumbUp:req.body.thumbUp - 1
-    }
-  }, {
-    sort: {_id: -1},
-    upsert: true
-  }, (err, result) => {
-    if (err) return res.send(err)
-    res.send(result)
-  })
-})
-/****End Thumbs Down*****/
+        // DELETE specific quote by ID
+        app.delete('/quotes/:id', (req, res) => {
+            const id = req.params.id
+            quotesCollection.deleteOne({ _id: new ObjectId(id) })
+                .then(result => {
+                    if (result.deletedCount === 0) {
+                        res.json({ message: 'No quote to delete.' })
+                    } else {
+                        res.json({ message: 'Quote deleted.' })
+                    }
+                })
+                .catch(err => console.error(err))
+        })
 
-app.delete('/messages', (req, res) => {
-  db.collection('messages').findOneAndDelete({name: req.body.name, msg: req.body.msg}, (err, result) => {
-    if (err) return res.send(500, err)
-    res.send('Message deleted!')
-  })
-})
+        // Start the server
+        app.listen(PORT, () => {
+            console.log(`Server running on http://localhost:${PORT}`)
+        })
+    })
+    .catch(error => console.error(error))

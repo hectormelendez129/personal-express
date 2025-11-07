@@ -1,79 +1,55 @@
-// Interactivity with the dom ie. thumbs and trash can actions
-
-var thumbUp = document.getElementsByClassName("fa-thumbs-up");
-var trash = document.getElementsByClassName("fa-trash");
-var thumbDown = document.getElementsByClassName("fa-thumbs-down");
-
-/********Thumbs Up ******/
-Array.from(thumbUp).forEach(function (element1) {
-  element1.addEventListener('click', function () {
-    const name = this.parentNode.parentNode.childNodes[1].innerText
-    const msg = this.parentNode.parentNode.childNodes[3].innerText
-    const total = parseFloat(this.parentNode.parentNode.childNodes[5].innerText)
-    // const thumbDown = parseFloat(this.parentNode.parentNode.childNodes[7].innerText)
-
-    fetch('/messages/thumbup', {
-      method: 'put',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        'name': name,
-        'msg': msg,
-        'thumbUp': total
-      })
+// ---- Inline Edit + Save ----
+document.querySelectorAll('.edit-button').forEach(button => {
+    button.addEventListener('click', () => {
+        const card = button.closest('.quote-card')
+        card.querySelector('.quote-text').classList.add('hidden')
+        card.querySelector('.quote-actions').classList.add('hidden')
+        card.querySelector('.edit-form').classList.remove('hidden')
     })
-      .then(response => {
-        if (response.ok) return response.json()
-      })
-      .then(data => {
-        console.log(data)
-        window.location.reload(true)
-      })
-  });
-});
-/******Thumbs Up****** */
+})
 
-/******Thumbs Down******/
-Array.from(thumbDown).forEach(function (element) {
-  element.addEventListener('click', function () {
-    const name = this.parentNode.parentNode.childNodes[1].innerText
-    const msg = this.parentNode.parentNode.childNodes[3].innerText
-    const total = parseFloat(this.parentNode.parentNode.childNodes[5].innerText)
-    // const thumbDown = parseFloat(this.parentNode.parentNode.childNodes[7].innerText)
-    fetch('/messages/thumbdown', {
-      method: 'put',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        'name': name,
-        'msg': msg,
-        'thumbUp': total
-      })
+document.querySelectorAll('.cancel-button').forEach(button => {
+    button.addEventListener('click', () => {
+        const card = button.closest('.quote-card')
+        card.querySelector('.quote-text').classList.remove('hidden')
+        card.querySelector('.quote-actions').classList.remove('hidden')
+        card.querySelector('.edit-form').classList.add('hidden')
     })
-      .then(response => {
-        if (response.ok) return response.json()
-      })
-      .then(data => {
-        console.log(data)
-        window.location.reload(true)
-      })
-  });
-});
-/******End Thumbs Down ******/
+})
 
-Array.from(trash).forEach(function (element) {
-  element.addEventListener('click', function () {
-    const name = this.parentNode.parentNode.childNodes[1].innerText
-    const msg = this.parentNode.parentNode.childNodes[3].innerText
-    fetch('messages', {
-      method: 'delete',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        'name': name,
-        'msg': msg
-      })
-    }).then(function (response) {
-      window.location.reload()
+document.querySelectorAll('.save-button').forEach(button => {
+    button.addEventListener('click', async () => {
+        const card = button.closest('.quote-card')
+        const id = card.dataset.id
+        const name = card.querySelector('.edit-name').value.trim()
+        const quote = card.querySelector('.edit-quote').value.trim()
+
+        const res = await fetch(`/quotes/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, quote })
+        })
+
+        const data = await res.json()
+        alert(data.message)
+        window.location.reload()
     })
-  });
-});
+})
+
+// ---- Delete Button ----
+document.querySelectorAll('.delete-button').forEach(button => {
+    button.addEventListener('click', async () => {
+        const card = button.closest('.quote-card')
+        const id = card.dataset.id
+
+        if (!confirm('Are you sure you want to delete this quote?')) return
+
+        const res = await fetch(`/quotes/${id}`, {
+            method: 'DELETE'
+        })
+
+        const data = await res.json()
+        alert(data.message)
+        window.location.reload()
+    })
+})

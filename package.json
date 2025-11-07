@@ -1,33 +1,20 @@
 {
-  "name": "crud-express-mongo",
+  "name": "practice-mongodb",
   "version": "1.0.0",
-  "description": "![21 Savage](public/21savage.jpg)",
-  "main": "index.js",
+  "description": "mongodb speed with friends",
+  "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "savage": "nodemon server.js"
+    "dev": "nodemon server.js"
   },
-  "author": "",
+  "author": "us",
   "license": "ISC",
   "dependencies": {
-    "assert": "^1.4.1",
-    "body-parser": "^1.14.2",
-    "bson": ">=1.0.5",
     "dotenv": "^17.2.3",
-    "ejs": "^3.1.8",
-    "express": "^4.13.3",
-    "mongodb": "^3.3.4"
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "mongodb": "^6.20.0"
   },
   "devDependencies": {
-    "minimist": ">=1.2.2",
-    "nodemon": "^2.0.4"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/hectormelendez129/api-demo.git"
-  },
-  "bugs": {
-    "url": "https://github.com/hectormelendez129/api-demo/issues"
-  },
-  "homepage": "https://github.com/hectormelendez129/api-demo#readme"
+    "nodemon": "^3.1.10"
+  }
 }
