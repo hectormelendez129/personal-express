@@ -3,7 +3,7 @@
 A full-stack Node.js and Express web application that allows users to create, edit, and delete famous quotes. 
 The app uses MongoDB for data persistence and EJS templating for dynamic rendering. Each quote can be updated inline, deleted instantly, and stored securely in a database.
 
-## [Live Demo]()
+## [Live Demo](https://personal-express.onrender.com/)
 
 ## Table of Contents
 1. [Project Overview](#project-overview)
@@ -72,7 +72,7 @@ http://localhost:3000
 5. Updates are reflected in real-time without page reloads (client-side refresh triggers).
 
 ## Screenshots
-[Live Demo]()
+[Live Demo](https://personal-express.onrender.com/)
 
 
 ## Acknowledgements
