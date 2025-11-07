@@ -80,5 +80,5 @@ http://localhost:3000
 * [Express.js Documentation](https://expressjs.com/)
 * [MongoDB Documentation](https://www.mongodb.com/docs/)
 * [MDN](https://developer.mozilla.org/en-US/)
-* [Zellwick](https://zellwk.com/blog/crud-express-mongodb/)
+* [Zellwk](https://zellwk.com/blog/crud-express-mongodb/)
 
